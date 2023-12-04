@@ -45,21 +45,7 @@ def line_to_game(line: str):
     return colours_hands
 
 
-def main():
-    TEST = False
-    input = "aoc-02/test_input.txt" if TEST else "aoc-02/input.txt"
-
-    lines = read_input(input)
-
-    games = []
-    for line in lines:
-        games.append(line_to_game(line))
-
-    for game in games:
-        print(f"{game=}")
-
-    max_dict = {"red": 12, "green": 13, "blue": 14}
-
+def tot_part1(games, max_dict):
     tot = 0
     for i, game in enumerate(games):
         game_id = i + 1
@@ -75,6 +61,50 @@ def main():
 
     print(tot)
 
+
+def tot_part2(games):
+    tot = 0
+    game_powers = []
+    for game in games:
+        max_blue = None
+        max_red = None
+        max_green = None
+
+        for hand in game:
+            # for k, v in hand.items():
+            if "blue" in hand and (max_blue is None or hand["blue"] > max_blue):
+                max_blue = hand["blue"]
+            if "red" in hand and (max_red is None or hand["red"] > max_red):
+                max_red = hand["red"]
+            if "green" in hand and (max_green is None or hand["green"] > max_green):
+                max_green = hand["green"]
+
+        print(game)
+        print(max_blue, max_green, max_red)
+        print()
+        game_powers.append(max_blue * max_green * max_red)
+
+    print(sum(game_powers))
+
+    print(tot)
+
+
+def main():
+    TEST = False
+    input = "aoc-02/test_input.txt" if TEST else "aoc-02/input.txt"
+
+    lines = read_input(input)
+
+    games = []
+    for line in lines:
+        games.append(line_to_game(line))
+
+    for game in games:
+        print(f"{game=}")
+
+    max_dict = {"red": 12, "green": 13, "blue": 14}
+
+    tot_part2(games)
 
 
 if __name__ == "__main__":
