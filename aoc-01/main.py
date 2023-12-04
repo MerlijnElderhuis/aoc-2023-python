@@ -1,6 +1,3 @@
-from enum import Enum
-
-
 def read_input(input_file: str) -> list[str]:
     with open(input_file, "r") as f:
         lines = f.read().splitlines()
