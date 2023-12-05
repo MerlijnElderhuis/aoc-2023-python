@@ -17,6 +17,7 @@ def is_symbol(char: str) -> bool:
 
 
 def is_adjacent(coordA, coordB):
+    print(f"checking adj for {coordA} {coordB}")
     return coordA[0] in [coordB[0] - 1, coordB[0], coordB[0] + 1] and coordA[1] in [
         coordB[1] - 1,
         coordB[1],
@@ -75,21 +76,42 @@ def main():
         print(num_from_lines)
 
     symbol_coords = symbol_coords_from_lines(input_lines)
-    print(symbol_coords)
+    # print(symbol_coords)
 
-    nums_to_sum = []
-    for num_str, num_coords in nums_from_lines:
-        for num_coord in num_coords:
-            if any(
-                is_adjacent(num_coord, sym_coord)
-                for (symbol, sym_coord) in symbol_coords
-            ):
-                print(f"appending {num_str}")
-                nums_to_sum.append(num_str)
-                break
+    ### Part 1
+    # nums_to_sum = []
+    # for num_str, num_coords in nums_from_lines:
+    #     for num_coord in num_coords:
+    #         if any(
+    #             is_adjacent(num_coord, sym_coord)
+    #             for (symbol, sym_coord) in symbol_coords
+    #         ):
+    #             print(f"appending {num_str}")
+    #             nums_to_sum.append(num_str)
+    #             break
 
-    nums_ints = [int(num) for num in nums_to_sum]
-    print(sum(nums_ints))
+    # nums_ints = [int(num) for num in nums_to_sum]
+    # print(sum(nums_ints))
+
+    ### Part 2
+    gear_ratios_total = 0
+
+    gears = [(sym, coord) for (sym, coord) in symbol_coords if sym == "*"]
+    print(gears)
+
+    for gear in gears:
+        adjacent_num_coords = []
+        for num_str, num_coords in nums_from_lines:
+            for num_coord in num_coords:
+                if is_adjacent(num_coord, gear[1]):
+                    adjacent_num_coords.append(num_str)
+                    break
+        if len(adjacent_num_coords) == 2:
+            gear_ratios_total += int(adjacent_num_coords[0]) * int(
+                adjacent_num_coords[1]
+            )
+
+    print(gear_ratios_total)
 
 
 if __name__ == "__main__":
