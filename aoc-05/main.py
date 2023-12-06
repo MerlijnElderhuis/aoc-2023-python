@@ -299,17 +299,17 @@ def main():
     print(f"{next_step_pairs=}")
     print("="*60)
 
-    print("PROCESSING temperature_to_humidity")
-    next_step_pairs = calc_next_steps(temperature_to_humidity, next_step_pairs)
-    print("temperature_to_humidity RESULT")
-    print(f"{next_step_pairs=}")
-    print("="*60)
+    # print("PROCESSING temperature_to_humidity")
+    # next_step_pairs = calc_next_steps(temperature_to_humidity, next_step_pairs)
+    # print("temperature_to_humidity RESULT")
+    # print(f"{next_step_pairs=}")
+    # print("="*60)
 
-    print("PROCESSING humidity_to_location")
-    next_step_pairs = calc_next_steps(humidity_to_location, next_step_pairs)
-    print("humidity_to_location RESULT")
-    print(f"{next_step_pairs=}")
-    print("="*60)
+    # print("PROCESSING humidity_to_location")
+    # next_step_pairs = calc_next_steps(humidity_to_location, next_step_pairs)
+    # print("humidity_to_location RESULT")
+    # print(f"{next_step_pairs=}")
+    # print("="*60)
 
     print(sorted(pair[0]for pair in next_step_pairs)[0])
     print(sorted(pair[0]for pair in next_step_pairs)[1])
@@ -379,6 +379,7 @@ def calc_output_for_seed_pair_map_range(seed_pair, map_range):
         res_list.append((seed_pair_min, map_range_min - seed_pair_min))
         res_list.append((map_range_min + MAP_RANGE_DIFF, seed_pair_max - map_range_min)) # must map
         print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+        assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
     
 
@@ -389,6 +390,7 @@ def calc_output_for_seed_pair_map_range(seed_pair, map_range):
         res_list.append((map_range_min + MAP_RANGE_DIFF, map_range_max - map_range_min)) # must map
         res_list.append((map_range_max, seed_pair_max - map_range_max))
         print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+        assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
 
 
@@ -397,15 +399,18 @@ def calc_output_for_seed_pair_map_range(seed_pair, map_range):
         print("3 Valt er helemaal in")
         res_list.append((seed_pair_min + MAP_RANGE_DIFF, seed_pair_max - seed_pair_min)) # must map
         print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+        assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
     
 
-    if seed_pair_min > map_range_min and seed_pair_max <= map_range_max:
+    if seed_pair_min >= map_range_min and seed_pair_max > map_range_max:
         # 4. 
         print("4 Deels rechts overlap")
-        res_list.append((seed_pair_min + MAP_RANGE_DIFF, map_range_max - seed_pair_max)) # must map
-        res_list.append((map_range_max, seed_pair_max - map_range_max))
+        print("unmapped" + str((seed_pair_min, map_range_max - seed_pair_min + 1)))
+        res_list.append((seed_pair_min + MAP_RANGE_DIFF, map_range_max - seed_pair_min + 1)) # must map
+        res_list.append((map_range_max + 1, seed_pair_max - map_range_max - 1))
         print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+        assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
     
 
@@ -413,8 +418,8 @@ def calc_output_for_seed_pair_map_range(seed_pair, map_range):
     # if seed_pair_max > map_range_max:
     #     res_list.append((seed_pair_max, seed_pair_max - map_range_max))
 
-    print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
-
+    print(f"E Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+    raise Exception()
     return res_list
 
     if seed_pair_max < map_range_min:
