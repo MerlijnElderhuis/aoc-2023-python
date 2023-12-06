@@ -98,7 +98,7 @@ def map_id_rev(id, map):
 
 
 def main():
-    TEST = True
+    TEST = False
     if TEST:
         file_name = "test_input.txt"
     else:
@@ -228,7 +228,7 @@ def main():
             cur = map_id_rev(cur, map)
 
         return cur
-
+        
     # print("stats")
     # print("hum to loc")
     # print(humidity_to_location)
@@ -237,125 +237,124 @@ def main():
     # print("min seed")
     # print(sorted(seed_pairs, key=lambda seedpair: seedpair[0]))
 
-    # # for map in humidity_to_location:
-    # i = 2232050638
-    # while True:
-    #     res = traverse_maps_rev(i)
+    # t_seed_pair = seed_pairs[0]
+    # t_map_range = seed_to_soil[1]
 
-    #     for seed_pair in seed_pairs:
-    #         if res >= seed_pair[0] and res < seed_pair[0] + seed_pair[1]:
-    #             print(f"FOUND {i}")
-    #             return
+    # t_seed_pairs = [(40, 100)]
+    # t_map_ranges = [t_map_range]
 
-    #     print(i)
-    #     i += 1
+    # print("t_seed_pair")
+    # print(t_seed_pair)
+    # print("t_map_range")
+    # print(t_map_range)
 
-    # print(traverse_maps_rev(46))
-
-    t_seed_pair = seed_pairs[0]
-    t_map_range = seed_to_soil[1]
-
-    t_seed_pairs = [(40, 100)]
-    t_map_ranges = [t_map_range]
-
-    print("t_seed_pair")
-    print(t_seed_pair)
-    print("t_map_range")
-    print(t_map_range)
-
-
-
-
-
+    i = 0
+    while True:
+        if i % 10000 == 0:
+            print(i)
+        res = traverse_maps_rev(i)
+        for seed_pair in seed_pairs:
+            if res >=seed_pair[0] and res < seed_pair[0] + seed_pair[1]:
+                print(f"FOUND {i}")
+                return
+        i += 1
+    
 
 
     print("PROCESSING seed_to_soil")
     next_step_pairs = calc_next_steps(seed_to_soil, seed_pairs)
     print("seed_to_soil RESULT")
-    print(f"{next_step_pairs=}")
-    print("="*60)
+    # print(f"{next_step_pairs=}")
+    print("=" * 60)
 
     print("PROCESSING soil_to_fertilizer")
     next_step_pairs = calc_next_steps(soil_to_fertilizer, next_step_pairs)
     print("soil_to_fertilizer RESULT")
-    print(f"{next_step_pairs=}")
-    print("="*60)
+    # print(f"{next_step_pairs=}")
+    print("=" * 60)
 
     print("PROCESSING fertilizer_to_water")
     next_step_pairs = calc_next_steps(fertilizer_to_water, next_step_pairs)
     print("fertilizer_to_water RESULT")
-    print(f"{next_step_pairs=}")
-    print("="*60)
+    # print(f"{next_step_pairs=}")
+    print("=" * 60)
 
     print("PROCESSING water_to_light")
     next_step_pairs = calc_next_steps(water_to_light, next_step_pairs)
     print("water_to_light RESULT")
-    print(f"{next_step_pairs=}")
-    print("="*60)
+    # print(f"{next_step_pairs=}")
+    print("=" * 60)
 
     print("PROCESSING light_to_temperature")
     next_step_pairs = calc_next_steps(light_to_temperature, next_step_pairs)
     print("light_to_temperature RESULT")
-    print(f"{next_step_pairs=}")
-    print("="*60)
-
-    # print("PROCESSING temperature_to_humidity")
-    # next_step_pairs = calc_next_steps(temperature_to_humidity, next_step_pairs)
-    # print("temperature_to_humidity RESULT")
     # print(f"{next_step_pairs=}")
-    # print("="*60)
+    print("=" * 60)
 
-    # print("PROCESSING humidity_to_location")
-    # next_step_pairs = calc_next_steps(humidity_to_location, next_step_pairs)
-    # print("humidity_to_location RESULT")
+    print("PROCESSING temperature_to_humidity")
+    next_step_pairs = calc_next_steps(temperature_to_humidity, next_step_pairs)
+    print("temperature_to_humidity RESULT")
     # print(f"{next_step_pairs=}")
-    # print("="*60)
+    print("=" * 60)
 
-    print(sorted(pair[0]for pair in next_step_pairs)[0])
-    print(sorted(pair[0]for pair in next_step_pairs)[1])
-    print(sorted(pair[0]for pair in next_step_pairs)[2])
+    print("PROCESSING humidity_to_location")
+    next_step_pairs = calc_next_steps(humidity_to_location, next_step_pairs)
+    print("humidity_to_location RESULT")
+    # print(f"{next_step_pairs=}")
+    print("=" * 60)
+
+    print(sorted(pair[0] for pair in next_step_pairs)[0])
+    print(sorted(pair[0] for pair in next_step_pairs)[1])
+    print(sorted(pair[0] for pair in next_step_pairs)[2])
+    print(sorted(pair[0] for pair in next_step_pairs)[3])
+    print(sorted(pair[0] for pair in next_step_pairs)[4])
+    print(sorted(pair[0] for pair in next_step_pairs)[5])
+
+
 
 def calc_next_steps(seed_to_soil, seed_pairs):
     next_step_pairs = []
     for seed_pair in seed_pairs:
         for map_range in seed_to_soil:
-            next_step_pairs.extend(calc_output_for_seed_pair_map_range(seed_pair, map_range))
-    
-    
+            next_step_pairs.extend(
+                calc_output_for_seed_pair_map_range(seed_pair, map_range)
+            )
+
     return uniques(next_step_pairs)
 
-    
-
     # t = calc_output_for_seed_pair_map_range(t_seed_pair, t_map_range)
-
 
     # print(t)
 
 
 def calc_output_for_seed_pair_map_range(seed_pair, map_range):
-    print("="*10)
+    # print("=" * 10)
     seed_pair_min = seed_pair[0]
     seed_pair_max = seed_pair[0] + seed_pair[1]
 
-    print(f"{seed_pair_min=}")
-    print(f"{seed_pair_max=}")
+    # print(f"{seed_pair_min=}")
+    # print(f"{seed_pair_max=}")
 
     map_range_min = map_range["src"]
     map_range_max = map_range["src"] + map_range["nr"]
-    print(f"{map_range_min=}")
-    print(f"{map_range_max=}")
+    # print(f"{map_range_min=}")
+    # print(f"{map_range_max=}")
 
-    if seed_pair_max < map_range_min:
-        print("Valt er links buiten")
-        print(f"A Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {[seed_pair]} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+    if seed_pair_max - 1 < map_range_min:
+        # print("Valt er links buiten")
+        # print(
+            # f"A Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {[seed_pair]} based on mapper {map_range} |{map_range_min}, {map_range_max}|"
+        # )
         return [seed_pair]
-    if seed_pair_min > map_range_max:
-        print("Valt er rechts buiten")
-        print(f"B Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {[seed_pair]} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+    if seed_pair_min > map_range_max - 1:
+        # print("Valt er rechts buiten")
+        # print(
+            # f"B Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {[seed_pair]} based on mapper {map_range} |{map_range_min}, {map_range_max}|"
+        # )
         return [seed_pair]
 
     MAP_RANGE_DIFF = map_range["dest"] - map_range["src"]
-    print(f"{MAP_RANGE_DIFF=}")
+    # print(f"{MAP_RANGE_DIFF=}")
     res_list = []
 
     # res_lower = max(seed_pair_min, map_range_min)
@@ -374,51 +373,72 @@ def calc_output_for_seed_pair_map_range(seed_pair, map_range):
     #     res_list.append((res_upper, seed_pair_max - res_upper))
 
     if seed_pair_min < map_range_min and seed_pair_max <= map_range_max:
-        # 1. 
-        print("1 Deels links overlap")
+        # 1.
+        # print("1 Deels links overlap")
         res_list.append((seed_pair_min, map_range_min - seed_pair_min))
-        res_list.append((map_range_min + MAP_RANGE_DIFF, seed_pair_max - map_range_min)) # must map
-        print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
-        assert seed_pair[1] == sum(res[1] for res in res_list)
+        res_list.append(
+            (map_range_min + MAP_RANGE_DIFF, seed_pair_max - map_range_min)
+        )  # must map
+        # print(
+        #     f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|"
+        # )
+        # print(f"IN: {list(range(seed_pair_min, seed_pair_max))}")
+        # print(f"OUT: {[list(range(res[0], res[0] + res[1])) for res in res_list]}")
+        # assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
-    
 
     if seed_pair_min < map_range_min and seed_pair_max > map_range_max:
-        # 2. 
-        print("2 Valt er helemaal overheen")
+        # 2.
+        # print("2 Valt er helemaal overheen")
         res_list.append((seed_pair_min, map_range_min - seed_pair_min))
-        res_list.append((map_range_min + MAP_RANGE_DIFF, map_range_max - map_range_min)) # must map
+        res_list.append(
+            (map_range_min + MAP_RANGE_DIFF, map_range_max - map_range_min)
+        )  # must map
         res_list.append((map_range_max, seed_pair_max - map_range_max))
-        print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
-        assert seed_pair[1] == sum(res[1] for res in res_list)
+        # print(
+        #     f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|"
+        # )
+        # print(f"IN: {list(range(seed_pair_min, seed_pair_max))}")
+        # print(f"OUT: {[list(range(res[0], res[0] + res[1])) for res in res_list]}")
+        # assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
-
 
     if seed_pair_min >= map_range_min and seed_pair_max <= map_range_max:
-        # 3.  
-        print("3 Valt er helemaal in")
-        res_list.append((seed_pair_min + MAP_RANGE_DIFF, seed_pair_max - seed_pair_min)) # must map
-        print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
-        assert seed_pair[1] == sum(res[1] for res in res_list)
+        # 3.
+        # print("3 Valt er helemaal in")
+        res_list.append(
+            (seed_pair_min + MAP_RANGE_DIFF, seed_pair_max - seed_pair_min)
+        )  # must map
+        # print(
+        #     f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|"
+        # )
+        # print(f"IN: {list(range(seed_pair_min, seed_pair_max))}")
+        # print(f"OUT: {[list(range(res[0], res[0] + res[1])) for res in res_list]}")
+        # assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
-    
 
     if seed_pair_min >= map_range_min and seed_pair_max > map_range_max:
-        # 4. 
-        print("4 Deels rechts overlap")
-        print("unmapped" + str((seed_pair_min, map_range_max - seed_pair_min + 1)))
-        res_list.append((seed_pair_min + MAP_RANGE_DIFF, map_range_max - seed_pair_min + 1)) # must map
-        res_list.append((map_range_max + 1, seed_pair_max - map_range_max - 1))
-        print(f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
-        assert seed_pair[1] == sum(res[1] for res in res_list)
+        # 4.
+        # print("4 Deels rechts overlap")
+        # print("unmapped" + str((seed_pair_min, map_range_max - seed_pair_min)))
+        res_list.append(
+            (seed_pair_min + MAP_RANGE_DIFF, map_range_max - seed_pair_min)
+        )  # must map
+        res_list.append((map_range_max, seed_pair_max - map_range_max))
+        # print(
+        #     f"C Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|"
+        # )
+        # print(f"IN: {list(range(seed_pair_min, seed_pair_max))}")
+        # print(f"OUT: {[list(range(res[0], res[0] + res[1])) for res in res_list]}")
+        # assert seed_pair[1] == sum(res[1] for res in res_list)
         return res_list
-    
-
 
     # if seed_pair_max > map_range_max:
     #     res_list.append((seed_pair_max, seed_pair_max - map_range_max))
 
-    print(f"E Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|")
+    print(
+        f"E Mapping {seed_pair} |{seed_pair_min}, {seed_pair_max}| to {res_list} based on mapper {map_range} |{map_range_min}, {map_range_max}|"
+    )
     raise Exception()
     return res_list
 
@@ -426,6 +446,7 @@ def calc_output_for_seed_pair_map_range(seed_pair, map_range):
         return None
     if seed_pair_min > map_range_max:
         return None
+
 
 def uniques(seq):
     seen = set()
@@ -435,4 +456,10 @@ def uniques(seq):
 
 if __name__ == "__main__":
     main()
+    # seed_pair = (60, 1)
+
+    # print(traverse_maps())
+
+    # map_range = {"src": 50, "dest": 20, "nr": 10}
+    # calc_output_for_seed_pair_map_range(seed_pair,map_range)
     # map_id(0, )
