@@ -28,10 +28,10 @@ def get_s():
 
 def vec_dir_map():
     return {
-        "n": (0, 1),
+        "n": (0, -1),
         "w": (-1, 0),
         "e": (1, 0),
-        "s": (0, -1),
+        "s": (0, 1),
     }
 
 
@@ -115,8 +115,20 @@ def get_connections(coords):
     char = lines[coords[0]][coords[1]]
     print(char)
 
+
 def apply_dir_to_coord(coord, dir):
-    return (coord)
+    res = (coord[0] + vec_dir_map()[dir][0], coord[1] + vec_dir_map()[dir][1])
+    print(f"res apply dir: {res}")
+    return res
+
+
+def valid_coord(coord):
+    return (
+        coord[0] >= 0
+        and coord[0] < len(lines)
+        and coord[1] >= 0
+        and coord[1] < len(lines[0])
+    )
 
 
 def is_connected(coord, dir):
@@ -124,24 +136,63 @@ def is_connected(coord, dir):
     return dir in permitted_dirs(coord_chr)
 
 
-def traverse(cur_coord, last_dir):
+def traverse_one(cur_coord, last_dir):
     cur_chr = lines[cur_coord[0]][cur_coord[1]]
-    perm_dirs = permitted_dirs(cur_chr)
+    print(f"{cur_chr=}")
+    dirs = permitted_dirs(cur_chr)
+    print(f"permitted_dirs {dirs}")
 
     rev_last_dir = rev_dir(last_dir)
-    print(perm_dirs)
-    print(rev_last_dir)
-    perm_dirs_without_last = [dir for dir in perm_dirs if dir != rev_last_dir]
-    print(perm_dirs_without_last)
+    print(dirs)
+    print(f"{rev_last_dir=}")
+    dirs = [dir for dir in dirs if dir != rev_last_dir]
+    print(f"permitted_dirs without last {dirs}")
+    print(f"{dirs=}")
 
-    perm_connected_dirs_without_last = [dir for dir in perm_dirs_without_last if dir !=is_connected(cur_coord, dir)]
+    # # Ensure current coord is connected outwards
+    # dirs = [dir for dir in dirs if is_connected(cur_coord, dir)]
+    # print(f"permitted_dirs without unconnected outwards {dirs}")
+    # Ensure outwards actually exists
+    dirs = [dir for dir in dirs if valid_coord(apply_dir_to_coord(cur_coord, dir))]
+    print(f"permitted_dirs without invalid outwards {dirs}")
+    # Ensure outwards has link inwards
+    dirs = [
+        dir
+        for dir in dirs
+        if is_connected(apply_dir_to_coord(cur_coord, dir), rev_dir(dir))
+    ]
+    print(f"permitted_dirs without invalid inwards {dirs}")
+
+    if not len(dirs) == 1:
+        raise Exception
+
+    return apply_dir_to_coord(cur_coord, dirs[0]), dirs[0]
+    # print(dirs)
 
 
+def traverse_while_possible(start, last_taken, max_steps=None):
+    seen = [start]
+    steps = 0
+    max_steps = max_steps or 100
 
+    cur_coord = start
+    last_dir = last_taken
+    while True:
+        if steps >= max_steps:
+            print(f"STEPS EXCEEDED {max_steps}. cur_coord: {cur_coord}")
+            break
+
+        cur_coord, last_dir = traverse_one(cur_coord=cur_coord, last_dir=last_dir)
+        steps += 1
+        if cur_coord in seen:
+            print(f"Seen cur coord: {cur_coord}. Steps: {steps}")
+            break
+
+    return seen, steps
 
 
 def main():
-    TEST = True
+    TEST = False
     global lines
     if TEST:
         file_name = "test_input.txt"
@@ -158,11 +209,17 @@ def main():
     print(coords_s)
 
     # get_connections((0, 2))
-    print(get_adj((2, 2)))
-    print(get_adj((0, 2)))
-    print(get_adj((4, 4)))
+    # print(get_adj((2, 2)))
+    # print(get_adj((0, 2)))
+    # print(get_adj((4, 4)))
 
-    traverse(coords_s, "e")
+    # traverse_one(coords_s, "w")
+    # print("=" * 80)
+    # traverse_one((1,4), "e")
+    # traverse_one((4,2), "n")
+    print("=" * 80)
+
+    traverse_while_possible(coords_s, "e", max_steps=6778)
 
 
 if __name__ == "__main__":
