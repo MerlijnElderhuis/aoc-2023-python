@@ -118,7 +118,7 @@ def get_connections(coords):
 
 def apply_dir_to_coord(coord, dir):
     res = (coord[0] + vec_dir_map()[dir][0], coord[1] + vec_dir_map()[dir][1])
-    print(f"res apply dir: {res}")
+    # print(f"res apply dir: {res}")
     return res
 
 
@@ -138,30 +138,30 @@ def is_connected(coord, dir):
 
 def traverse_one(cur_coord, last_dir):
     cur_chr = lines[cur_coord[0]][cur_coord[1]]
-    print(f"{cur_chr=}")
+    # print(f"{cur_chr=}")
     dirs = permitted_dirs(cur_chr)
-    print(f"permitted_dirs {dirs}")
+    # print(f"permitted_dirs {dirs}")
 
     rev_last_dir = rev_dir(last_dir)
-    print(dirs)
-    print(f"{rev_last_dir=}")
+    # print(dirs)
+    # print(f"{rev_last_dir=}")
     dirs = [dir for dir in dirs if dir != rev_last_dir]
-    print(f"permitted_dirs without last {dirs}")
-    print(f"{dirs=}")
+    # print(f"permitted_dirs without last {dirs}")
+    # print(f"{dirs=}")
 
     # # Ensure current coord is connected outwards
     # dirs = [dir for dir in dirs if is_connected(cur_coord, dir)]
     # print(f"permitted_dirs without unconnected outwards {dirs}")
     # Ensure outwards actually exists
     dirs = [dir for dir in dirs if valid_coord(apply_dir_to_coord(cur_coord, dir))]
-    print(f"permitted_dirs without invalid outwards {dirs}")
+    # print(f"permitted_dirs without invalid outwards {dirs}")
     # Ensure outwards has link inwards
     dirs = [
         dir
         for dir in dirs
         if is_connected(apply_dir_to_coord(cur_coord, dir), rev_dir(dir))
     ]
-    print(f"permitted_dirs without invalid inwards {dirs}")
+    # print(f"permitted_dirs without invalid inwards {dirs}")
 
     if not len(dirs) == 1:
         raise Exception
@@ -173,7 +173,7 @@ def traverse_one(cur_coord, last_dir):
 def traverse_while_possible(start, last_taken, max_steps=None):
     seen = [start]
     steps = 0
-    max_steps = max_steps or 100
+    max_steps = max_steps or 20000
 
     cur_coord = start
     last_dir = last_taken
@@ -187,12 +187,45 @@ def traverse_while_possible(start, last_taken, max_steps=None):
         if cur_coord in seen:
             print(f"Seen cur coord: {cur_coord}. Steps: {steps}")
             break
+        seen.append(cur_coord)
 
     return seen, steps
 
 
+def get_loop_coord_outside_clockwise(dir):
+    if dir == "n":
+        return "w"
+    if dir == "e":
+        return "n"
+    if dir == "s":
+        return "e"
+    if dir == "w":
+        return "s"
+
+
+def calc_outside_for_loop_coord(loop_coords):
+    loop_coords_enh = []
+
+    for i, loop_coord in enumerate(loop_coords):
+        next_coord = loop_coords[0] if i == len(loop_coords) - 1 else loop_coords[i + 1]
+        print("=" * 4)
+        print(loop_coord)
+        print(next_coord)
+
+        dir_vec = (next_coord[0] - loop_coord[0], next_coord[1] - loop_coord[1])
+        dir_nswe = coord_vec_to_dir(dir_vec)
+        print(dir_vec)
+        print(dir_nswe)
+
+        loop_coords_enh.append((loop_coord, get_loop_coord_outside_clockwise(dir_nswe)))
+    
+    return loop_coords_enh
+
+
+
+
 def main():
-    TEST = False
+    TEST = True
     global lines
     if TEST:
         file_name = "test_input.txt"
@@ -219,7 +252,13 @@ def main():
     # traverse_one((4,2), "n")
     print("=" * 80)
 
-    traverse_while_possible(coords_s, "e", max_steps=6778)
+    loop_coords, steps = traverse_while_possible(coords_s, "n", max_steps=20000)
+
+    print(loop_coords)
+    print(len(loop_coords))
+
+    loop_coord_enh = calc_outside_for_loop_coord(loop_coords)
+    print(loop_coord_enh)
 
 
 if __name__ == "__main__":
