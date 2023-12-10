@@ -47,7 +47,7 @@ def diffs_for_line(num_list):
 def extrapolate(diff_lists):
     cur = 0
     for cur_list in reversed(diff_lists):
-        cur = cur_list[-1] + cur
+        cur = cur_list[0] - cur
 
     return cur
 
@@ -70,7 +70,8 @@ def main():
     res = 0
     for num_list in num_lines:
         diffs_lines = diffs_for_line(num_list)
-        res += extrapolate(diffs_lines)
+        ex = extrapolate(diffs_lines)
+        res += ex
 
     print(res)
 
