@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from enum import Enum
-from itertools import groupby
+from itertools import groupby, combinations
 import os
 from functools import total_ordering
 import copy
+
 
 def test_order():
     # print(Card('a') == Card('a'))
@@ -108,21 +109,45 @@ class Hand:
             # gen perms
             print(f"input {cards_in}")
             card_perms = []
-            cards_in_len = copy.deepcopy(cards_in)
-            j_count = [card for card in cards_in_len if card == Card("j")]
-            print(len(j_count))
-            for i in j_count:
-                cards_in_tmp = copy.deepcopy(cards_in)
-                cards_in_tmp.remove(Card("j"))
-                for sym in ["2", "3", "4", "5", "6", "7", "8", "9", "j", "t", "q", "k", "a"]:
-                    cards_in_tmp_copy = copy.deepcopy(cards_in_tmp)
-                    cards_in_tmp_copy.append(Card(sym))
-                    card_perms.append(cards_in_tmp_copy)
+            cards_in_transformed = copy.deepcopy(cards_in)
+            j_indices = list_indices(cards_in, Card("j"))
 
+            cls.rec_append(j_indices, cards_in_transformed, card_perms)
 
-            for card_perm in card_perms:
-                print(f"Generated perm {card_perm}")
+            # for card_perm in card_perms:
+            #     print(f"Generated perm {card_perm}")
             return card_perms
+
+    @classmethod
+    def rec_append(cls, indices, acc, res_list):
+        # print("=" * 10)
+        # print(f"Rec call: {indices=}, {acc=}")
+        # print(f"{res_list=}")
+        if not indices:
+            res_list.append(acc)
+        else:
+            indices_copy = copy.deepcopy(indices)
+            cur_index = indices_copy.pop()
+            for sym in [
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "j",
+                "t",
+                "q",
+                "k",
+                "a",
+            ]:
+                cur_acc = copy.deepcopy(acc)
+                cur_acc[cur_index] = Card(sym)
+                # print("cur_acc")
+                # print(cur_acc)
+                cls.rec_append(indices_copy, cur_acc, res_list)
 
     @classmethod
     def from_stringlist(cls, card_strings: list[str]):
@@ -170,6 +195,10 @@ class Hand:
                     return self_card < other_card
 
 
+def list_indices(mylist: list, item):
+    return [i for i, e in enumerate(mylist) if e == item]
+
+
 def parse_input(lines) -> list[tuple[Hand, int]]:
     hands_bets = []
     for line in lines:
@@ -180,7 +209,7 @@ def parse_input(lines) -> list[tuple[Hand, int]]:
 
 
 def main():
-    TEST = True
+    TEST = False
     if TEST:
         file_name = "test_input.txt"
     else:
@@ -212,23 +241,23 @@ if __name__ == "__main__":
     # test_hand()
     # print(Hand.from_stringlist(["8", "2", "8", "2", "8"]))
 
-    hand1 = Hand.from_stringlist(["2", "2", "2", "2", "8"])
-    hand2 = Hand.from_stringlist(["a", "7", "7", "7", "7"])
+    # hand1 = Hand.from_stringlist(["2", "2", "2", "2", "8"])
+    # hand2 = Hand.from_stringlist(["a", "7", "7", "7", "7"])
 
     # print(Hand.from_stringlist(strs) < Hand.from_stringlist(strs1))
     # print('Card("a") > Card("t")')
     # print(Card("a") > Card("t"))
     # print(Card("t") > Card("j"))
-    hand3 = Hand.from_stringlist(["t", "t", "t", "t", "6"])
-    hand4 = Hand.from_stringlist(["a", "8", "8", "8", "8"])
+    # hand3 = Hand.from_stringlist(["t", "t", "t", "t", "6"])
+    # hand4 = Hand.from_stringlist(["a", "8", "8", "8", "8"])
     # hand5 = Hand.from_stringlist(["8", "a", "a", "8", "8"])
     # hand6 = Hand.from_stringlist(["a", "a", "8", "8", "8"])
     # hand7 = Hand.from_stringlist(["a", "a", "a", "8", "8"])
 
     # hands = [hand3, hand1, hand2, hand4, hand5, hand6, hand7]
-    hands = [hand1, hand2, hand3, hand4]
+    # hands = [hand1, hand2, hand3, hand4]
     # print(hands)
-    hands_orig = [hand1, hand2, hand3, hand4]
+    # hands_orig = [hand1, hand2, hand3, hand4]
 
     # print(hand1 > hand2)
     # print(hand2 > hand3)
@@ -245,4 +274,7 @@ if __name__ == "__main__":
     # print(hands == hands_orig)
 
     # print(hand7 > hand6)
+
+    # print(Hand.from_stringlist(["j", "2", "8", "2", "8"]))
+
     main()
