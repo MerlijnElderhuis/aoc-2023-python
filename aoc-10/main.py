@@ -192,14 +192,14 @@ def traverse_while_possible(start, last_taken, max_steps=None):
     return seen, steps
 
 
-def get_loop_coord_outside_clockwise(dir):
-    if dir == "n":
+def get_loop_coord_outside_clockwise(prev_dir, next_dir):
+    if next_dir == "n":
         return "w"
-    if dir == "e":
+    if next_dir == "e":
         return "n"
-    if dir == "s":
+    if next_dir == "s":
         return "e"
-    if dir == "w":
+    if next_dir == "w":
         return "s"
 
 
@@ -207,21 +207,45 @@ def calc_outside_for_loop_coord(loop_coords):
     loop_coords_enh = []
 
     for i, loop_coord in enumerate(loop_coords):
+        prev_coord = loop_coords[len(loop_coords) - 1] if i == 0 else loop_coords[i - 1]
         next_coord = loop_coords[0] if i == len(loop_coords) - 1 else loop_coords[i + 1]
         print("=" * 4)
         print(loop_coord)
         print(next_coord)
 
-        dir_vec = (next_coord[0] - loop_coord[0], next_coord[1] - loop_coord[1])
-        dir_nswe = coord_vec_to_dir(dir_vec)
-        print(dir_vec)
-        print(dir_nswe)
 
-        loop_coords_enh.append((loop_coord, get_loop_coord_outside_clockwise(dir_nswe)))
+        prev_dir_vec = (loop_coord[0] - prev_coord[0], loop_coord[1] - prev_coord[1])
+        prev_dir_nswe = coord_vec_to_dir(prev_dir_vec)
+        print(prev_dir_nswe)
+
+        next_dir_vec = (next_coord[0] - loop_coord[0], next_coord[1] - loop_coord[1])
+        next_dir_nswe = coord_vec_to_dir(next_dir_vec)
+        print(next_dir_vec)
+        print(next_dir_nswe)
+
+        loop_coords_enh.append((loop_coord, get_loop_coord_outside_clockwise(prev_dir_nswe, next_dir_nswe)))
     
     return loop_coords_enh
 
+def calc_enclosed(loop_coord_enh):
+    global lines
 
+    accum = []
+
+    for yi, y in enumerate(lines):
+        for xi, x in enumerate(y):
+            coord_is_in_loop = (xi, yi) in [l[0] for l in loop_coord_enh]
+
+            if coord_is_in_loop:
+                coord_in_loop, is_outer = [l for l in loop_coord_enh if l[0] == (xi, yi)][0]
+                print(f"coord in loop: {(xi, yi)}: {coord_in_loop}, {is_outer}")
+            else:
+                print(f"coord NOT in loop: {(xi, yi)}")
+            
+
+        break
+
+    print(accum)
 
 
 def main():
@@ -259,6 +283,8 @@ def main():
 
     loop_coord_enh = calc_outside_for_loop_coord(loop_coords)
     print(loop_coord_enh)
+
+    calc_enclosed(loop_coord_enh)
 
 
 if __name__ == "__main__":
