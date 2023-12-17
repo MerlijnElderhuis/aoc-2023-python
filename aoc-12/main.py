@@ -1,4 +1,5 @@
 from functools import cache
+from itertools import groupby
 import os
 
 
@@ -14,13 +15,23 @@ def read_input_lines(input_file: str) -> list[str]:
 
 VALID_COUNT = 0
 
+CHECKED_COUNT = 0
+
 
 @cache
-def check_valid(str, condition, valid_count):
+def check_valid(str, condition):
     # print("IS_VALID")
     # print(f"{str=}")
     # print(f"{condition=}")
-    global VALID_COUNT
+    if has_longer_broken_substring(str, condition):
+        print("L", end='', flush=True)
+        return False
+
+
+    global CHECKED_COUNT
+    CHECKED_COUNT += 1
+    if CHECKED_COUNT % 1000 == 0:
+        print(".", end='', flush=True)
     split_str = [part for part in str.split(".") if part]
     # print(f"{split_str=}")
     parts = tuple(len(part) for part in split_str)
@@ -28,10 +39,25 @@ def check_valid(str, condition, valid_count):
     is_valid = parts == condition
     # print(f"{is_valid=}")
 
-    if is_valid:
-        valid_count += 1
     return is_valid
 
+
+def max_conseq(s):
+    max = 0
+    cur = 0
+
+    for c in s:
+        if c == "#":
+            cur +=1
+        else:
+            if cur > max:
+                max = cur
+            cur  = 0
+    return max
+
+def has_longer_broken_substring(in_str, conditions):
+    res = max_conseq(in_str)
+    return res > max(conditions)
 
 def is_finished(str):
     return "?" not in str
@@ -56,31 +82,35 @@ def parse_input(lines):
 from copy import copy
 
 
-def traverse(in_str, start_condition, valid_count):
+def traverse(in_str, start_condition):
     # print()
     # print("TRAVERSE")
     # print(f"{in_str}")
     # print(f"{start_condition}")
     if is_finished(in_str):
-        return [in_str] if check_valid(in_str, start_condition, valid_count) else []
+        is_valid = check_valid(in_str, start_condition)
+        if is_valid:
+            print("W", sep=None)
+        return [in_str] if is_valid else []
     else:
         next_index = in_str.index("?")
         in_str_copy1 = replace_at(copy(in_str), next_index, ".")
         in_str_copy2 = replace_at(copy(in_str), next_index, "#")
 
         return [
-            *traverse(in_str_copy1, start_condition, valid_count),
-            *traverse(in_str_copy2, start_condition, valid_count),
+            *traverse(in_str_copy1, start_condition),
+            *traverse(in_str_copy2, start_condition),
         ]
 
 
 def unfold(line, conditions):
-    res_line = []
+    res_line = ""
     res_conditions = tuple(conditions * 5)
 
     for i in range(5):
         res_line += line
-        res_line += "?"
+        if i < 4:
+            res_line += "?"
 
     return res_line, res_conditions
 
@@ -100,20 +130,39 @@ def main():
     in_lines = parse_input(lines)
     print(in_lines)
 
+    """ Part 1
+    
+    # valid_sum = 0
+    # for in_line in in_lines:
+    #     valid_count = 0
+    #     res = traverse(in_line[0], in_line[1], valid_count)
+    #     print("LINE RES")
+    #     print(in_line)
+    #     print(res)
+    #     valid_sum += len(res)
+
+    # print(f"{valid_sum=}")
+    """
+
+    # Part 2
+
     valid_sum = 0
     for in_line in in_lines:
-        valid_count = 0
-        res = traverse(in_line[0], in_line[1], valid_count)
-        print("LINE RES")
-        print(in_line)
-        print(res)
-        valid_sum += len(res)
+        unfolded_line, unfolded_conditions = unfold(in_line[0], in_line[1])
+        print("=" * 50)
+        print(f"{unfolded_line=}")
+        print(f"{unfolded_conditions=}")
+        # res = traverse(unfolded_line, unfolded_conditions)
 
-    print(f"{valid_sum=}")
+        # print(res)
+        # print(len(res))
+        global CHECKED_COUNT
+        CHECKED_COUNT = 0
 
 
 if __name__ == "__main__":
     main()
+    # print(unfold(".#", tuple([1])))
 
     # is_valid(".#.##.###", (1, 2, 3))
     # is_valid("##.##.###", (1, 2, 3))
