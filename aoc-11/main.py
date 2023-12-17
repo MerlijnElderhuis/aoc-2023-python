@@ -1,5 +1,7 @@
 import os
 
+SKIP_MULTIPLIER = 1000000
+
 
 def read_input_lines(input_file: str) -> list[str]:
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -15,6 +17,10 @@ def transpose(l):
     return ["".join(i) for i in zip(*l)]
 
 
+def transpose_galaxies(l):
+    return [(y, x) for (x, y) in l]
+
+
 def parse_input(lines):
     coords = []
 
@@ -28,23 +34,27 @@ def get_expanded_input(lines):
 
     for i, line in enumerate(lines):
         if not any(x == "#" for x in line):
-            print(f"Appending extra line at {i}")
+            # print(f"Appending extra line at {i}")
+            for i in range(SKIP_MULTIPLIER):
+                res.append(line)
+        else:
             res.append(line)
-        res.append(line)
 
-    print(f"{res=}")
+    # print(f"{res=}")
     res = transpose(res)
-    print(f"{res=}")
+    # print(f"{res=}")
 
     res2 = []
 
-    print("T")
-
+    # print("T")
+    #
     for i, line in enumerate(res):
         if not any(x == "#" for x in line):
-            print(f"Appending extra line at {i}")
+            # print(f"Appending extra line at {i}")
+            for i in range(SKIP_MULTIPLIER):
+                res2.append(line)
+        else:
             res2.append(line)
-        res2.append(line)
     return transpose(res2)
 
 
@@ -58,7 +68,7 @@ def galaxy_coords(lines):
 
 
 def diffs(galaxy_coords):
-    print(galaxy_coords)
+    # print(galaxy_coords)
 
     res = 0
     for a in galaxy_coords:
@@ -68,8 +78,67 @@ def diffs(galaxy_coords):
     print(res // 2)
 
 
+def get_expanded_galaxies(galaxies):
+    g_s = sorted(galaxies, key=lambda x: x[0])
+    from copy import deepcopy
+
+    gs_in = deepcopy(g_s)
+    print(f"G_S in: {gs_in}")
+
+    g_sc = []
+    prev = 0
+    skipped = 0
+
+    for x, y in g_s:
+        print("=" * 11)
+        print(f"CUR: {(x,y )}")
+        skip = x - prev - 1
+        if skip > 0:
+            print(f"ADDING skip {skip}")
+            skipped += skip
+
+        moved_cur = (x + skipped * (SKIP_MULTIPLIER-1), y)
+        print(f"{skip=}")
+        print(f"{skipped=}")
+        print(f"{moved_cur=}")
+        g_sc.append(moved_cur)
+
+        prev = x
+    print("NEW''''")
+    print(g_sc)
+
+    g_sc = transpose_galaxies(g_sc)
+    g_sc = sorted(g_sc, key=lambda x: x[0])
+
+    g_sc2 = []
+    prev = 0
+    skipped = 0
+
+    for x, y in g_sc:
+        print("=" * 11)
+        print(f"CUR: {(x,y )}")
+        skip = x - prev - 1
+        if skip > 0:
+            print(f"ADDING skip {skip}")
+            skipped += skip
+
+        moved_cur = (x + skipped * (SKIP_MULTIPLIER-1), y)
+        print(f"{moved_cur=}")
+        g_sc2.append(moved_cur)
+
+        prev = x
+
+    g_sc2 = transpose_galaxies(g_sc2)
+    print(f"IN:")
+    print(f"{gs_in}")
+    print("NEW")
+    print(sorted(g_sc2, key=lambda x: x[0]))
+
+    return g_sc2
+
+
 def main():
-    TEST = True
+    TEST = False
     if TEST:
         file_name = "test_input.txt"
     else:
@@ -79,15 +148,25 @@ def main():
     for line in lines:
         print(line)
     print("=" * 80)
+    galaxies = galaxy_coords(lines)
+    new_exp = get_expanded_galaxies(galaxies)
 
-    expanded_lines = get_expanded_input(lines)
+    # expanded_lines = get_expanded_input(lines)
+    # print("OLD:")
+    # old_lines = sorted(galaxy_coords(expanded_lines), key=lambda x: x[0])
+    # print(old_lines)
 
-    for line in expanded_lines:
-        print(line)
+    # print("NEW:")
+    # print(new_exp)
 
-    print("=" * 80)
-    galaxies = galaxy_coords(expanded_lines)
-    diffs(galaxies)
+    # for line in expanded_lines:
+    #     print(line)
+
+    # print("=" * 80)
+    print("new res")
+    diffs(new_exp)
+    # print("old res")
+    # diffs(old_lines)
 
 
 if __name__ == "__main__":
