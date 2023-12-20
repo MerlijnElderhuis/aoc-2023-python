@@ -115,7 +115,7 @@ def main():
     from copy import deepcopy
 
     moved_rocks = lines
-    moved_rocks = move_rocks(moved_rocks)
+    # moved_rocks = move_rocks(moved_rocks)
     for moved_rock_line in moved_rocks:
         print(moved_rock_line)
 
@@ -164,14 +164,14 @@ def main():
         # moved_rocks = flip(moved_rocks)
 
 
-        # if moved_rocks in mycache:
+        if moved_rocks in mycache:
         # # if i > 1000:
-        #     print("DONE")
-        #     print(i)
-        #     print(calc_score(moved_rocks))
-        #     break
+            print("DONE")
+            print(i)
+            print(calc_score(moved_rocks))
+            break
 
-        # mycache.append(moved_rocks)
+        mycache.append(moved_rocks)
 
         # i += 1
         # if i % 100 == 0:
