@@ -5,6 +5,18 @@ def transpose(l):
     return ["".join(i) for i in zip(*l)]
 
 
+def flip(l):
+    res = []
+    for line in l:
+        rev_line = list(line)
+        rev_line.reverse()
+        # print(rev_line)
+        res.append("".join(rev_line))
+    return res
+
+    return ["".join(list(line).reverse()) for line in l]
+
+
 def read_input_lines(input_file: str) -> list[str]:
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir = dir_path.split("/")[-1]
@@ -15,15 +27,18 @@ def read_input_lines(input_file: str) -> list[str]:
     return lines
 
 
+mycache = []
+
+
 def move_rocks(input: list[str]):
     input_trans = transpose(input)
 
     res_cols = []
 
     for j, col in enumerate(input_trans):
-        block_rock_coords = [i for i, val in enumerate(col) if val == "#"]
-        print(f"col {j}")
-        print(block_rock_coords)
+        # block_rock_coords = [i for i, val in enumerate(col) if val == "#"]
+        # print(f"col {j}")
+        # print(block_rock_coords)
 
         cur_block_rock = -1
         block_map = {}
@@ -37,7 +52,7 @@ def move_rocks(input: list[str]):
             if chr == "#":
                 cur_block_rock = i
 
-        print(f"{block_map=}")
+        # print(f"{block_map=}")
 
         # cur_block_index = -1
         cur_block_counter = block_map.get(-1, 0)
@@ -50,7 +65,7 @@ def move_rocks(input: list[str]):
             if cur_block_counter:
                 cur_build_col += "O"
                 cur_block_counter = cur_block_counter - 1
-                print()
+                # print()
             elif col[cur_col_index] == "#":
                 cur_build_col += "#"
                 cur_block_counter = block_map.get(cur_col_index, 0)
@@ -59,15 +74,15 @@ def move_rocks(input: list[str]):
 
             cur_col_index += 1
 
-        print("cur_build_col")
-        print(cur_build_col)
+        # print("cur_build_col")
+        # print(cur_build_col)
 
         res_cols.append(cur_build_col)
-        print("=" * 10)
-        print()
+        # print("=" * 10)
+        # print()
 
-    print("=" * 20)
-    print(res_cols)
+    # print("=" * 20)
+    # print(res_cols)
     return transpose(res_cols)
 
 
@@ -85,7 +100,7 @@ def calc_score(moved_rocks):
 
 
 def main():
-    TEST = False
+    TEST = True
     if TEST:
         file_name = "test_input.txt"
     else:
@@ -96,10 +111,74 @@ def main():
         print(line)
     print("=" * 80)
 
-    moved_rocks = move_rocks(lines)
+    i = 0
+    from copy import deepcopy
 
-    score = calc_score(moved_rocks)
-    print(score)
+    moved_rocks = lines
+    moved_rocks = move_rocks(moved_rocks)
+    for moved_rock_line in moved_rocks:
+        print(moved_rock_line)
+
+    while True:
+        # print(calc_score(moved_rocks))
+        print("="*10)
+
+        for i in range(4):
+            print(i)
+            print("after turn, before move")
+            # moved_rocks = transpose(moved_rocks)
+            # moved_rocks = transpose(moved_rocks)
+            moved_rocks = move_rocks(moved_rocks)
+            moved_rocks = transpose(moved_rocks)
+            moved_rocks = flip(moved_rocks)
+
+            for moved_rock_line in moved_rocks:
+                print(moved_rock_line)
+            print()
+            print("after move")
+
+            for moved_rock_line in moved_rocks:
+                print(moved_rock_line)
+            pass
+
+        print()
+        for moved_rock_line in moved_rocks:
+            print(moved_rock_line)
+        
+        pass
+
+        # moved_rocks = flip(moved_rocks)
+
+        # moved_rocks = move_rocks(moved_rocks)
+
+        # print()
+        # for moved_rock_line in moved_rocks:
+        #     print(moved_rock_line)
+
+        # pass
+
+        # moved_rocks = flip(moved_rocks)
+        # moved_rocks = move_rocks(moved_rocks)
+        # moved_rocks = transpose(moved_rocks)
+        # moved_rocks = move_rocks(moved_rocks)
+        # moved_rocks = flip(moved_rocks)
+
+
+        # if moved_rocks in mycache:
+        # # if i > 1000:
+        #     print("DONE")
+        #     print(i)
+        #     print(calc_score(moved_rocks))
+        #     break
+
+        # mycache.append(moved_rocks)
+
+        # i += 1
+        # if i % 100 == 0:
+        #     print(i)
+
+    # score = calc_score(moved_rocks)
+    # print(score)
 
 
 # def get_rocks_for_col(col):
