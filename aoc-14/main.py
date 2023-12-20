@@ -29,6 +29,10 @@ def read_input_lines(input_file: str) -> list[str]:
 
 mycache = []
 
+iteration_dict = {}
+rockformation_dict = {}
+actual_formation_dict = {}
+
 
 def move_rocks(input: list[str]):
     input_trans = transpose(input)
@@ -88,8 +92,8 @@ def move_rocks(input: list[str]):
 
 def calc_score(moved_rocks):
     max_score = len(moved_rocks)
-    print("max_score")
-    print(max_score)
+    # print("max_score")
+    # print(max_score)
 
     tot = 0
 
@@ -100,7 +104,7 @@ def calc_score(moved_rocks):
 
 
 def main():
-    TEST = True
+    TEST = False
     if TEST:
         file_name = "test_input.txt"
     else:
@@ -114,6 +118,9 @@ def main():
     i = 0
     from copy import deepcopy
 
+    first_time_dup = 0
+    second_time_dup = 0
+
     moved_rocks = lines
     # moved_rocks = move_rocks(moved_rocks)
     for moved_rock_line in moved_rocks:
@@ -121,31 +128,32 @@ def main():
 
     while True:
         # print(calc_score(moved_rocks))
-        print("="*10)
+        print("=" * 10)
 
-        for i in range(4):
-            print(i)
-            print("after turn, before move")
+        for n in range(4):
+            # print(n)
+            # print("after turn, before move")
             # moved_rocks = transpose(moved_rocks)
             # moved_rocks = transpose(moved_rocks)
             moved_rocks = move_rocks(moved_rocks)
             moved_rocks = transpose(moved_rocks)
             moved_rocks = flip(moved_rocks)
 
-            for moved_rock_line in moved_rocks:
-                print(moved_rock_line)
-            print()
-            print("after move")
+            # for moved_rock_line in moved_rocks:
+            #     print(moved_rock_line)
+            # print()
+            # print("after move")
 
-            for moved_rock_line in moved_rocks:
-                print(moved_rock_line)
+            # for moved_rock_line in moved_rocks:
+            #     print(moved_rock_line)
             pass
 
         print()
         for moved_rock_line in moved_rocks:
             print(moved_rock_line)
-        
-        pass
+
+        print(f"{i=}")
+        print(f"{calc_score(moved_rocks)=}")
 
         # moved_rocks = flip(moved_rocks)
 
@@ -163,24 +171,54 @@ def main():
         # moved_rocks = move_rocks(moved_rocks)
         # moved_rocks = flip(moved_rocks)
 
-
-        if moved_rocks in mycache:
-        # # if i > 1000:
-            print("DONE")
-            print(i)
-            print(calc_score(moved_rocks))
-            break
+        # if moved_rocks in mycache:
+        # # # if i > 1000:
+        #     print("DONE")
+        #     print(i)
+        #     print(calc_score(moved_rocks))
+        #     break
 
         mycache.append(moved_rocks)
+        iteration_dict[i] = calc_score(moved_rocks)
+        tuple_rocks = tuple(tuple(line) for line in moved_rocks)
+        if tuple_rocks in rockformation_dict:
+            rockformation_dict[tuple_rocks] = rockformation_dict[tuple_rocks] + 1
+        else:
+            rockformation_dict[tuple_rocks] = 1
 
-        # i += 1
+        if rockformation_dict[tuple_rocks] == 2 and not first_time_dup:
+            first_time_dup = i
+            print(f"SETTING FIRST TIME DUP {i}")
+        
+        if rockformation_dict[tuple_rocks] == 3 and not second_time_dup:
+            second_time_dup = i
+            print(f"SETTING SECOND TIME DUP {i}. FIRST TIME DUP: {first_time_dup}.")
+            cycle = second_time_dup - first_time_dup
+            print(f"CYCLE: {cycle}")
+            offset = first_time_dup % cycle
+            print(f"OFFSET: {offset}")
+
+            i_res = (1000_000_000 % cycle - offset) % cycle
+            print(f"i_res: {i_res=}")
+            print(iteration_dict[i_res + offset - 1])
+            print(iteration_dict)
+            pass
+            # raise Exception()
+
+        print(f"{iteration_dict=}")
+        print(f"{rockformation_dict.values()=}")
+        pass
+
+        i += 1
         # if i % 100 == 0:
         #     print(i)
+
+    print(iteration_dict)
 
     # score = calc_score(moved_rocks)
     # print(score)
 
-
+# Answered: 99939 (too high), 99503 (too high)
 # def get_rocks_for_col(col):
 
 
